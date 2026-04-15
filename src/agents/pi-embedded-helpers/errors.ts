@@ -323,7 +323,8 @@ const REPLAY_INVALID_RE =
   /\bprevious_response_id\b.*\b(?:invalid|unknown|not found|does not exist|expired|mismatch)\b|\btool_(?:use|call)\.(?:input|arguments)\b.*\b(?:missing|required)\b|\bincorrect role information\b|\broles must alternate\b/i;
 const SANDBOX_BLOCKED_RE =
   /\bapproval is required\b|\bapproval timed out\b|\bapproval was denied\b|\bblocked by sandbox\b|\bsandbox\b.*\b(?:blocked|denied|forbidden|disabled|not allowed)\b/i;
-const NO_BODY_HTTP_WRAPPER_RE = /^(?:no body(?: response)?|status code \(no body\))$/i;
+const NO_BODY_HTTP_WRAPPER_RE =
+  /^(?:no body(?: response)?|no response body|status code \(no body\))$/i;
 
 function inferSignalStatus(signal: FailoverSignal): number | undefined {
   if (typeof signal.status === "number" && Number.isFinite(signal.status)) {
@@ -694,7 +695,9 @@ function isOpenRouterKeyLimitExceededError(raw: string, provider?: string): bool
 }
 
 function isExactUnknownNoDetailsError(raw: string): boolean {
-  return normalizeOptionalLowercaseString(raw)?.trim() === "unknown error (no error details in response)";
+  return (
+    normalizeOptionalLowercaseString(raw)?.trim() === "unknown error (no error details in response)"
+  );
 }
 
 function classifyFailoverClassificationFromMessage(
