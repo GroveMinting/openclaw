@@ -2,6 +2,9 @@
 
 FROM node:24-bookworm-slim@sha256:b4687aef2571c632a1953695ce4d61d6462a7eda471fe6e272eebf0418f276ba
 
+ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
+ENV PATH=/home/node/.npm-global/bin:${PATH}
+
 # Smoke images are pinned and short-lived, so skip distro upgrades here and
 # spend the time budget on installer coverage instead.
 RUN --mount=type=cache,id=openclaw-install-sh-smoke-apt-cache,target=/var/cache/apt,sharing=locked \
@@ -26,5 +29,10 @@ RUN --mount=type=cache,id=openclaw-install-sh-smoke-apt-cache,target=/var/cache/
 COPY install-sh-common/cli-verify.sh /usr/local/install-sh-common/cli-verify.sh
 COPY install-sh-common/version-parse.sh /usr/local/install-sh-common/version-parse.sh
 COPY --chmod=755 install-sh-smoke/run.sh /usr/local/bin/openclaw-install-smoke
+
+RUN mkdir -p /home/node/.npm-global \
+  && chown -R node:node /home/node/.npm-global
+
+USER node
 
 ENTRYPOINT ["/usr/local/bin/openclaw-install-smoke"]
